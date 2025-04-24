@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Scroll-Controlled Video</title>
+  <style>
+    #scrollyVideo {
+      position: sticky;
+      top: 20px;
+      width: 100%;
+      max-width: 600px;
+    }
+    /* Give enough page length to scroll */
+    body::after { content: ""; display: block; height: 200vh; }
+  </style>
+</head>
+<body>
+  <video id="scrollyVideo"
+         src="biology_rotating.mp4"
+         preload="auto"
+         muted
+         playsinline>
+    Your browser does not support the video tag.
+  </video>
+  <script>
+    const video = document.getElementById('scrollyVideo');
+    video.addEventListener('loadedmetadata', () => {
+      const duration = video.duration;
+      let ticking = false;
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          window.requestAnimationFrame(() => {
+            const scrollY    = window.scrollY;
+            const docHeight  = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollFrac = Math.max(0, Math.min(1, scrollY / docHeight));
+            video.currentTime = scrollFrac * duration;
+            ticking = false;
+          });
+          ticking = true;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
