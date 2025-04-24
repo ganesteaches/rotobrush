@@ -2,39 +2,51 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Scroll-Controlled Video</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scroll-Controlled Transparent Video</title>
   <style>
+    body {
+      margin: 0;
+    }
+    /* Make whatever’s behind the video show through */
     #scrollyVideo {
       position: sticky;
       top: 20px;
       width: 100%;
       max-width: 600px;
+      background: transparent;
     }
-    /* Give enough page length to scroll */
-    body::after { content: ""; display: block; height: 200vh; }
+    /* Ensure there’s enough scrollable space */
+    body::after {
+      content: "";
+      display: block;
+      height: 200vh;
+    }
   </style>
 </head>
 <body>
-  <video id="scrollyVideo"
-         src="biology_rotating.mp4"
-         preload="auto"
-         muted
-         playsinline>
-    Your browser does not support the video tag.
+
+  <video id="scrollyVideo" muted playsinline preload="auto">
+    <!-- Chrome/Firefox/Edge will pick this up -->
+    <source src="bio_rot_4.webm" type="video/webm">
+    <!-- Safari (and other QuickTime-capable browsers) will fall back here -->
+    <source src="bio_rot_4.mov"  type="video/quicktime">
+    Your browser doesn’t support transparent video.
   </video>
+
   <script>
     const video = document.getElementById('scrollyVideo');
     video.addEventListener('loadedmetadata', () => {
       const duration = video.duration;
       let ticking = false;
+
       window.addEventListener('scroll', () => {
         if (!ticking) {
           window.requestAnimationFrame(() => {
-            const scrollY    = window.scrollY;
-            const docHeight  = document.documentElement.scrollHeight - window.innerHeight;
-            const scrollFrac = Math.max(0, Math.min(1, scrollY / docHeight));
-            video.currentTime = scrollFrac * duration;
+            const scrollY   = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const fraction  = Math.max(0, Math.min(1, scrollY / docHeight));
+            video.currentTime = fraction * duration;
             ticking = false;
           });
           ticking = true;
@@ -42,5 +54,6 @@
       });
     });
   </script>
+
 </body>
 </html>
